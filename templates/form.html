@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <title>Ferum</title>
+    <!-- Подключение библиотеки jQuery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js" integrity="sha256-/H4YS+7aYb9kJ5OKhFYPUjSJdrtV6AeyJOtTkw6X72o=" crossorigin="anonymous"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous">
+    </script>
+  
+    <!--JavaScript-->
+    <script language="JavaScript">
+      //Меню
+      $(document).ready(function(){   
+        $("#button_message").click(function () {
+          if ($("#content_message").is(":hidden")) {
+            if (id_sender.value.length >=18){
+              $("#content_message").show("slow");
+              $("#content_home").hide("slow");
+            }
+            else{
+              
+            }
+          }
+          else {
+            $("#content_message").hide("slow");
+          }
+          return false;
+        });
+        $("#button_home").click(function () {
+          if ($("#content_home").is(":hidden")) {
+            $("#content_home").show("slow");
+            $("#content_message").hide("slow");
+          }
+          else {
+            $("#content_home").hide("slow");
+          }
+          return false;
+        });
+      });
+      
+      // Загрузка и отображение сообщений
+      function load_Messages() {
+        $.get(
+          "/get_messages",
+          (data) => {
+            $("#chat_window").empty();
+            var messages = data["messages"];
+            for (var i in messages) {
+              var message = messages[i];
+              var id = message["id_user"];
+              var id_sender = message["id_sender"];
+              var name = message["name"];
+              var text = message["text"];
+              var time = message["time"];
+              
+              if (id*id+id_sender*id_sender==$("#id_user").val()*$("#id_user").val()+$("#id_sender").val()*$("#id_sender").val()){//Получает сообщения от другого пользователя
+                
+                
+                
+                var html = "<div> <b style='color:#05386B;'> " +name + "<b style='color:#05386B;'> -" + text + " </b>" +  "<i style='color:#05386B;'>" + time + "</i> </div>";
+                
+                
+                
+                var div = $(html);
+                $("#chat_window").append(div);
+              }
+            }           
+          }
+        );
+      }
+      
+      // Загрузка и отображение друзей
+      function load_friands() {
+        $.get(
+          "/get_friands",
+          (data) => {
+            $("#friands_window").empty();
+            var friands = data["friands"];
+            for (var i in friands) {
+              var friand = friands[i];
+              var name = friand["name"];
+              var password = friand["password"];
+              if (name== $("#name").val()){
+                if (password== $("#password").val()){
+                  var id = friand["id"];
+                  var html = "<div> <button>"  + id + "</button></div>";
+                  
+                }
+              }
+              var div1 = $(html); // div = визуальный элемент с сообщением
+              $("#friands_window").append(div1);
+            }
+          }
+        );
+      }
+          
+      //Форум
+      function forum(){
+        document.getElementById("m").remove();
+        a=a-1
+      }
+
+
+
+      
+      // Отправка сообщения
+      function send_Message() {
+        // Кладем текст из поля "name" в переменную
+        var name = $("#name").val();
+        var id_sender = $("#id_sender").val();
+        var id = $("#id_user").val();
+        var text = $("#text").val();
+        $.get("/send_message", {"name" : name, "id_sender" : id_sender, "id_user" : id, "text" : text});
+        $("#text").val("");
+      
+      }
+
+      function generate(){
+        $.get(
+          "/get_messages",
+          (data) => {
+            $("#chat_window").empty();
+            var messages = data["messages"];
+            for (var i in messages) {
+              var message = messages[i];
+              var id = message["id_sender"];
+              var id_random= Math.random();
+              id_random=id_random*id_random*id_random/10;
+              var contenthome = document.getElementById('content_home');
+              if (id_random!=id){
+                contenthome.innerHTML += "<p class='p_content'>Ваш сгенерированный id <b>(Не теряй код!) </b> " + id_random + "</p>";
+                document.getElementById("id_sender").value = id_random;
+                break
+              }
+              else{
+                
+              }
+            }
+          }
+        );
+      }
+        
+      // При загрузке страницы
+      $(() => {
+        // При нажатии клавиш в поле текст
+        $("#text").on("keypress", (event) => {
+          // При нажатии Enter, вызвать функцию sendMessage
+          if (event.keyCode == 13) {
+            send_Message();
+          }
+        });
+
+        // Каждую секунду вызывать loadMessages
+        setInterval(load_Messages, 1000);
+      });
+      function smile1(){
+        $("#text").val($("#text").val()+"😁");
+      }
+      function smile2(){
+        $("#text").val($("#text").val()+"🥺");
+      }
+      function smile3(){
+        $("#text").val($("#text").val()+"🥰");
+      }
+    </script>
+  
+    <!--Css-->
+    <style>
+        body{
+          background-color:#FFFFFF;
+          
+        }
+        #menu {
+          margin: 0;
+          padding: 0;
+          list-style-type: none;
+          border: 2px solid #000000 ;
+          border-radius: 20px 5px;
+          width: 100%;
+          
+          background-color: #000000 ;
+        }
+        #menu li { display: inline; }
+        #menu button {
+          color: #000000;
+          padding: 5px 10px;
+          text-decoration: none;
+          font-weight: bold;
+          display: inline-block;
+          width: 100px;
+          border-radius: 20px 5px;
+          background-color: #FFFFFF;
+        }
+        #menu button:hover {
+          border-radius: 20px 5px;
+          background-color: #FFFFFF;
+          color:#000000;
+        }
+      
+        .chat{
+          height: 400px;
+          overflow:auto; 
+          border:solid;
+        }
+        .friands{
+          height: 160px;
+          overflow:auto; 
+          border:solid;
+        }
+        .contenthome{
+          display:none;
+        }
+        .p_content{
+          color:black;
+        }
+        .contentmessage{
+          display:none;
+        }
+        .send{
+          width:126px;
+          border: radius 5px;
+          background-color: 
+        }
+    </style>
+
+</head>
+
+<!-- Интерфейс: имя, окно чата, текст сообщения -->  
+<body>
+  
+  <center>
+    <ul id="menu">
+      <li><button  id="button_home" Onclick="">Аккаунт</button></li>
+      <li><button Onclick="forum()">Форум</button></li>
+      <li><button id="button_message" Onclick="message()">Сообщения</button></li>
+    </ul>
+    <div name="button" id="m"></div>
+    <p></p>
+    <div id="content_home" class="contenthome" >
+    <input id='name' type='text' class=".name" placeholder='Ваше Имя'/>
+    <input id='id_sender' type='password' minlength="18" placeholder='Ваш ID (18 символов)'/>
+      <p></p>
+    <button class=".send" onclick="generate()">Генерировать id</button>
+    </div>
+    <p></p>
+    <table>
+      <tr>
+        <td> 
+          <div id="content_message" class="contentmessage" >
+            <input id='id_user' type='text' minlength="10" placeholder='ID пользователя'/>
+            
+            <div  class="chat" id='chat_window' ></div>
+            <input id='text' type='text' placeholder='Сообщение'>
+            <b onclick="smile1()">😁</b>
+            <b onclick="smile2()">🥺</b>
+            <b onclick="smile3()">🥰</b>
+            <button class=".send" onclick="send_Message()">Отправить</button>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </center>
+  
+</body>
+  
+</html>
